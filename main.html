@@ -20,10 +20,10 @@
                     <img id="loteria" src="img/Agregar un subtítulo-Photoroom.png" alt="">
                 </div>
             </header>
-            <h1 class="ml3">Unirte al 500k / 125USD</h1>
+            <h1 class="ml3">Unirte al 500k / 150USD</h1>
             <div class="content">
                 <form id="uploadForm" autocomplete="off"
-                    action="https://script.google.com/macros/s/AKfycbytG4y5uERCD58DY3lKskP-ePOsBNCWVfsJERyx74J0VScO4NHK3TxC6prvfhjFVQub0Q/exec"
+                    action="https://script.google.com/macros/s/AKfycbyUgFBrT1nxz-mw-5UzPK7530GYjjfQngCsuphQsWx8VFJ_1LDXoNKsY5KDVN5ppR_B/exec"
                     method="POST">
                     <input type="hidden" value="" name="fileContent" id="fileContent">
                     <input type="hidden" value="" name="filename" id="filename">
@@ -76,7 +76,6 @@
                             </div>
                         </div>
                         <!-- Campos ocultos por defecto -->
-
                         <div class="input-box" style="display: none;">
                             <label for="binance_de_Pay">Binance de Pay</label>
                             <input type="text" id="binance_de_Pay" name="binance_de_Pay" class="form-control"
@@ -111,10 +110,19 @@
         <div class="form-container">
             <p class="form-text">Escanea este código QR</p>
             <img id="qr-img" src="img/BinanceQR.jpg" alt="QR" class="qr-image" />
-            <p class="form-text">Usuario</p>
-            <input type="text" id="refUser" placeholder="Referencia de pago" class="form-input" autocomplete="off" />
+            <p class="form-text">Usuario </p>
+            <input type="text" id="refUser" placeholder="Usuario de pago" class="form-input" autocomplete="off" />
             <button id="btnConfirmarQR" class="form-button" onclick="confirmarPago()">Confirmar</button>
         </div>
+    </div>
+
+    <div id="paso3" >
+        <h2>Confirmar Orden</h2>
+        <p>Por favor, ingresa tu ID de orden:</p>
+        <form id="orderForm">
+            <input type="text" id="orderId" placeholder="ID de Orden" class="form-input" autocomplete="off"  />
+            <button type="button" onclick="confirmarOrden()">Confirmar Orden</button>
+        </form>
     </div>
 
 
@@ -123,13 +131,10 @@
         // Constants
         const referenciasQR = {
             "Binance": [
-                { ref: "User-9aOee", qr: "img/BinanceAQR.jpg" },
-                { ref: "ciclo de vida", qr: "img/BinanceAQrv.png" },
-                { ref: "13051502", qr: "img/BinanvvceAQR.png" },
-                { ref: "User-44d8b", qr: "img/BinanvceLQR.png" }
+                { ref: "393096824", qr: "img/BinanvvceAQR.png" },
+                { ref: "888374027", qr: "img/BinanvceLQR.png" }
             ]
         };
-
         let referenciaActual = "";
         let timeoutID;
 
@@ -323,9 +328,7 @@
         }
 
         function setPaymentTitle(plataformaSeleccionada, tituloPago) {
-            if (plataformaSeleccionada === "Binance") {
-                tituloPago.textContent = "Pago: 25 USD";
-            } else if (plataformaSeleccionada === "Binance") {
+             if (plataformaSeleccionada === "Binance") {
                 tituloPago.textContent = "Pago: 25 USD";
             }
         }
@@ -336,27 +339,6 @@
             referenciaActual = aleatoria.ref;
         }
 
-
-        function mostrarVistaPrevia(input) {
-            const archivo = input.files[0];
-            const preview = document.getElementById("previewFactura");
-
-            preview.innerHTML = "";
-
-            if (archivo && archivo.type.startsWith("image/")) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const img = document.createElement("img");
-                    img.src = e.target.result;
-                    img.style.maxWidth = "30%";
-                    img.style.borderRadius = "10px";
-                    preview.appendChild(img);
-                };
-                reader.readAsDataURL(archivo);
-            } else {
-                preview.textContent = "El archivo no es una imagen válida.";
-            }
-        }
 
         function confirmarPago() {
             const refUserValue = document.getElementById("refUser").value.trim();
@@ -369,8 +351,23 @@
             clearTimeout(timeoutID);
             Swal.fire("✅ Éxito", "El pago ha sido confirmado correctamente.", "success").then(() => {
                 document.getElementById("paso2").style.display = "none";
-                enviarDatosAlServidor(); // Enviar directamente los datos al servidor
+                document.getElementById("paso3").style.display = "block"; // Show paso3
+            });
+        }
 
+        function confirmarOrden() {
+            const orderId = document.getElementById("orderId").value.trim();
+
+            // Validate that orderId is a numeric value with 10 to 19 digits
+            const orderIdPattern = /^\d{10,19}$/;
+
+            if (!orderIdPattern.test(orderId)) {
+                Swal.fire("⚠️ ID de Orden inválido", "El ID de orden debe ser un número de entre 10 y 19 dígitos.", "warning");
+                return;
+            }
+
+            Swal.fire("✅ Orden Confirmada", `Tu ID de orden es: ${orderId}`, "success").then(() => {
+                enviarDatosAlServidor(orderId); // Pass orderId to the server
             });
         }
 
@@ -385,7 +382,7 @@
             const palabrasInvitar = invitar.split(" ").filter(p => p !== "");
 
             const binance = document.getElementById("binance_de_Pay").value.trim();
-            
+          
 
             const dineroSeleccionado = document.querySelector('input[name="dinero"]:checked');
             const pagosSeleccionados = Array.from(document.querySelectorAll('input[name="pago_preferido"]:checked'));
@@ -395,6 +392,7 @@
             }
 
             const metodoTexto = pagosSeleccionados.map(p => p.value).join(', ');
+            
             const binanceHtml = binance ? `<p><strong>Binance:</strong> ${binance}</p>` : '';
             const metodoHtml = `<p><strong>Método(s) de pago:</strong> ${metodoTexto}</p>`;
 
@@ -452,9 +450,12 @@
             return true;
         }
 
-        async function enviarDatosAlServidor() {
+        async function enviarDatosAlServidor(orderId) {
             const form = document.getElementById("uploadForm");
             const formData = new FormData(form);
+
+            // Add orderId to formData
+            formData.append('orderId', orderId);
 
             const nombres = document.getElementById("nombres").value.trim();
             const whatsApp = document.getElementById("whatsApp").value.trim();
@@ -478,7 +479,7 @@
                 });
 
                 if (response.ok) {
-                    showSuccessMessage(nombres, whatsAppLimpio, pais, invitar, binance, pagosSeleccionados, dineroSeleccionado);
+                    showSuccessMessage(nombres, whatsAppLimpio, pais, invitar, binance, pagosSeleccionados, dineroSeleccionado, orderId);
                     resetForm(form);
                 } else {
                     throw new Error("Error en el servidor");
@@ -489,7 +490,7 @@
             }
         }
 
-        function showSuccessMessage(nombres, whatsAppLimpio, pais, invitar, binance,  pagosSeleccionados, dineroSeleccionado) {
+        function showSuccessMessage(nombres, whatsAppLimpio, pais, invitar, binance, pagosSeleccionados, dineroSeleccionado, orderId) {
             Swal.fire({
                 title: "✅ Datos enviados correctamente",
                 html: `
@@ -500,6 +501,7 @@
             <p><strong>Binance de Pay:</strong> ${binance}</p>
             <p><strong>Método(s) de pago seleccionado(s):</strong> ${pagosSeleccionados.map(p => p.value).join(', ')}</p>
             <p><strong>Dinero:</strong> ${dineroSeleccionado?.value || 'N/A'}</p>
+            <p><strong>ID de Orden:</strong> ${orderId}</p>
             <br>
             <button onclick="window.open('https://chat.whatsapp.com/Eoa2r5mIQER9ITs0touhfN?mode=ac_t', '_blank'); Swal.close();"
                 style="background-color: #25D366; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 16px; cursor: pointer;">
@@ -509,8 +511,6 @@
                 icon: "success",
                 showConfirmButton: false,
                 timer: 15000,
-
-                // 🖼️ Fondo personalizado solo para el modal
                 background: 'url("img/Ciclovida.png") center center / cover no-repeat',
                 backdrop: 'rgba(0, 0, 0, 0.4)', // fondo detrás del modal
                 color: '#000' // color de texto dentro del modal

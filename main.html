@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CicloVida</title>
+    <link rel="stylesheet" href="css/main.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="icon" type="image/jpg" href="img/Ciclonormal.png">
+    <link rel="shortcut icon" href="img/Ciclovida.png" type="image/svg+xml">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>
+</head>
+
+<body>
+    <div class="block">
+        <div class="container">
+            <header class="hdr">
+                <div class="logo">
+                    <img id="loteria" src="img/Agregar un subtítulo-Photoroom.png" alt="">
+                </div>
+            </header>
+            <h1 class="ml3">Unirte al 500k / 125USD</h1>
+            <div class="content">
+                <form id="uploadForm" autocomplete="off"
+                    action="https://script.google.com/macros/s/AKfycbytG4y5uERCD58DY3lKskP-ePOsBNCWVfsJERyx74J0VScO4NHK3TxC6prvfhjFVQub0Q/exec"
+                    method="POST">
+                    <input type="hidden" value="" name="fileContent" id="fileContent">
+                    <input type="hidden" value="" name="filename" id="filename">
+                    <div class="user-details">
+                        <div class="input-box">
+                            <label for="nombres" class="form-label">Nombres</label>
+                            <input type="text" id="nombres" name="nombres" class="form-control"
+                                placeholder="Ingrese su Nomes completo" autocomplete="off" required>
+                        </div>
+                        <div class="input-box">
+                            <label for="whatsApp" class="form-label">Número de celular (WhatsApp)</label>
+                            <input type="text" id="whatsApp" name="whatsApp" class="form-control"
+                                placeholder="Ingrese su whatsApp" autocomplete="off" required>
+                        </div>
+                        <div class="input-box">
+                            <label for="pais" class="form-label">País</label>
+                            <input type="text" id="pais" name="pais" class="form-control" placeholder="País "
+                                autocomplete="off" required>
+                        </div>
+                        <div class="input-box">
+                            <label for="invitar" class="form-label"> ¿A quién estás invitando?</label>
+                            <input type="text" id="invitar" name="invitar" class="form-control" placeholder="invitar "
+                                autocomplete="off" required>
+                        </div>
+
+                        <div class="input-box">
+                            <label for="dinero">¿Tienes dinero?</label>
+                            <div class="checkbox-group">
+                                <label class="option">
+                                    <input type="checkbox" name="dinero" value="Si" onclick="seleccionarDinero(this)">
+                                    <span><img class="logos" src="img/aprobado-denegado_78370-4469-Photoroom.png"
+                                            alt="Si"> Si </span>
+                                </label>
+                                <label class="option">
+                                    <input type="checkbox" name="dinero" value="No" onclick="seleccionarDinero(this)">
+                                    <span><img class="logos" src="img/prohilido-denegado_78370-4469-Photoroom (1).png"
+                                            alt="No"> No</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="input-box">
+                            <label for="pago_preferido">Selecciona tu método de pago preferido:</label>
+                            <div class="checkbox-group">
+                                <label class="option">
+                                    <input type="checkbox" name="pago_preferido" value="Binance"
+                                        onclick="seleccionarPago(this)">
+                                    <span><img class="logos" src="img/binance-icon-logo-png_seeklogo-598330.png"
+                                            alt="Binance"> Binance</span>
+                                </label>
+                            </div>
+                        </div>
+                        <!-- Campos ocultos por defecto -->
+
+                        <div class="input-box" style="display: none;">
+                            <label for="binance_de_Pay">Binance de Pay</label>
+                            <input type="text" id="binance_de_Pay" name="binance_de_Pay" class="form-control"
+                                placeholder="Ingrese su número de Binance" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="button" style="width: 100%; text-align: center;">
+                        <input type="button" id="submitButton" value="ENVIAR DATOS" onclick="UploadFile();"
+                            class="btn btn-success">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL MULTI-STEP -->
+    <div id="paso1">
+        <h2>¿Tienes dinero ahora?</h2>
+        <label for="plataformaSelect">Selecciona tu plataforma:</label>
+        <select id="plataformaSelect" required>
+            <option value="" disabled selected>Selecciona una</option>
+            <option value="Binance">Binance</option>
+        </select>
+        <br><br>
+        <button onclick="pasarASiguientePaso()">Siguiente</button>
+    </div>
+
+    <div id="paso2">
+        <h2 id="pagoMontoTitulo">Pago:</h2>
+        <p>Plataforma seleccionada: <span id="platformSelected"></span></p>
+        <p id="timerCountdown">⏳ Tiempo restante: 01:00</p>
+        <div class="form-container">
+            <p class="form-text">Escanea este código QR</p>
+            <img id="qr-img" src="img/BinanceQR.jpg" alt="QR" class="qr-image" />
+            <p class="form-text">Referencia </p>
+            <input type="text" id="refUser" placeholder="Referencia de pago" class="form-input" autocomplete="off" />
+            <button id="btnConfirmarQR" class="form-button" onclick="confirmarPago()">Confirmar</button>
+        </div>
+    </div>
+
+
+
+    <script>
+        // Constants
+        const referenciasQR = {
+            "Binance": [
+                { ref: "889631652", qr: "img/BinanceAQR.jpg" },
+                { ref: "49135300", qr: "img/BinanceAQrv.png" },
+                { ref: "393096824", qr: "img/BinanvvceAQR.png" },
+                { ref: "888374027", qr: "img/BinanvceLQR.png" }
+            ]
+        };
+
+        let referenciaActual = "";
+        let timeoutID;
+
+        // Initialization
+        window.onload = function () {
+            setupEventListeners();
+            validarNombresYActivar();
+            validarInvitarYActivar();
+        };
+
+        // Event Listeners
+        function setupEventListeners() {
+            document.querySelectorAll("input[required]").forEach(input => {
+                input.addEventListener("input", checkFormCompletion);
+            });
+
+            document.getElementById("nombres").addEventListener("blur", validarNombresYActivar);
+            document.getElementById("invitar").addEventListener("blur", validarInvitarYActivar);
+            document.getElementById("invitar").addEventListener("input", checkFormCompletion);
+        }
+
+        // Form Validation
+        function validarNombresYActivar() {
+            const nombre = document.getElementById("nombres");
+            const valorNombre = nombre.value.trim();
+            const palabras = valorNombre.split(" ").filter(p => p !== "");
+
+            const campoWhatsApp = document.getElementById("whatsApp");
+            const campoPais = document.getElementById("pais");
+            const campoInvitar = document.getElementById("invitar");
+
+            if (valorNombre === "") {
+                nombre.classList.remove("error");
+                return;
+            }
+
+            if (palabras.length < 3 || palabras.length > 4) {
+                nombre.classList.add("error");
+                disableFields([campoWhatsApp, campoPais, campoInvitar]);
+                Swal.fire("❌ Nombre inválido", "El nombre debe tener entre 3 y 4 palabras exactas.", "warning");
+            } else {
+                nombre.classList.remove("error");
+                enableFields([campoWhatsApp, campoPais, campoInvitar]);
+            }
+
+            checkFormCompletion();
+        }
+
+        function validarInvitarYActivar() {
+            const campoInvitar = document.getElementById("invitar");
+            const valor = campoInvitar.value.trim();
+            const palabras = valor.split(" ").filter(p => p !== "");
+
+            if (valor === "") {
+                campoInvitar.classList.remove("error");
+                return;
+            }
+
+            if (palabras.length < 3 || palabras.length > 4) {
+                campoInvitar.classList.add("error");
+                Swal.fire("❌ Invitación inválida", "Debes escribir entre 3 y 4 palabras en el campo de invitación.", "warning");
+            } else {
+                campoInvitar.classList.remove("error");
+            }
+
+            checkFormCompletion();
+        }
+
+        function disableFields(fields) {
+            fields.forEach(campo => {
+                campo.value = "";
+                campo.disabled = true;
+                campo.removeAttribute("required");
+            });
+        }
+
+        function enableFields(fields) {
+            fields.forEach(campo => {
+                campo.disabled = false;
+                campo.setAttribute("required", true);
+            });
+        }
+
+        function checkFormCompletion() {
+            let allFilled = true;
+            const requiredFields = document.querySelectorAll("input[required]");
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) allFilled = false;
+            });
+
+            const dinero = document.querySelector('input[name="dinero"]:checked');
+            const pago = document.querySelector('input[name="pago_preferido"]:checked');
+
+            if (!dinero || !pago) allFilled = false;
+
+            document.getElementById("submitButton").disabled = !allFilled;
+        }
+
+        // Payment Selection
+        function seleccionarPago(checkbox) {
+            const checkboxes = document.querySelectorAll('input[name="pago_preferido"]');
+            const seleccionados = Array.from(checkboxes).filter(cb => cb.checked);
+
+            if (seleccionados.length > 3) {
+                checkbox.checked = false;
+                Swal.fire("⚠️ Máximo 3 métodos", "Solo puedes seleccionar hasta 3 métodos de pago.", "warning");
+                return;
+            }
+
+            togglePaymentFields(checkboxes, seleccionados);
+            checkFormCompletion();
+        }
+
+        function togglePaymentFields(checkboxes, seleccionados) {
+            
+            const binanceBox = document.getElementById("binance_de_Pay").parentElement;
+
+            
+            binanceBox.style.display = "none";
+
+            checkboxes.forEach(cb => {
+                const option = cb.closest('.option');
+                option?.classList.toggle('selected', cb.checked);
+            });
+
+            seleccionados.forEach(cb => {
+                if (cb.value === "Binance") binanceBox.style.display = "block";
+            });
+        }
+
+        function seleccionarDinero(checkbox) {
+            const checkboxes = document.querySelectorAll('input[name="dinero"]');
+            checkboxes.forEach(cb => {
+                cb.checked = cb === checkbox;
+                cb.closest('.option')?.classList.toggle('selected', cb.checked);
+            });
+
+            checkFormCompletion();
+        }
+
+        // Timer
+        function iniciarCuentaRegresiva(duracion) {
+            const timerElement = document.getElementById("timerCountdown");
+            let tiempoRestante = duracion;
+
+            function actualizarTimer() {
+                const minutos = Math.floor(tiempoRestante / 60);
+                const segundos = tiempoRestante % 60;
+                timerElement.textContent = `⏳ ${minutos.toString().padStart(2, "0")}:${segundos.toString().padStart(2, "0")}`;
+
+                if (tiempoRestante > 0) {
+                    tiempoRestante--;
+                    timeoutID = setTimeout(actualizarTimer, 1000);
+                } else {
+                    timerElement.textContent = "⏰ Tiempo finalizado";
+                    Swal.fire({
+                        title: 'Tiempo agotado',
+                        text: 'El tiempo para realizar el pago ha expirado',
+                        icon: 'warning',
+                        confirmButtonText: 'Entendido'
+                    }).then(() => {
+                        window.location.href = "index.html";
+                    });
+                }
+            }
+
+            actualizarTimer();
+        }
+
+        // Step Navigation
+        function pasarASiguientePaso() {
+            const plataformaSelect = document.getElementById("plataformaSelect");
+            const plataformaSeleccionada = plataformaSelect.value;
+            const tituloPago = document.getElementById("pagoMontoTitulo");
+
+            if (!plataformaSeleccionada) {
+                Swal.fire("⚠️ Selección necesaria", "Debes seleccionar una plataforma.", "warning");
+                return;
+            }
+
+            setPaymentTitle(plataformaSeleccionada, tituloPago);
+            setRandomReference(plataformaSeleccionada);
+
+            document.getElementById("platformSelected").textContent = plataformaSeleccionada;
+            document.getElementById("qr-img").src = referenciasQR[plataformaSeleccionada].find(ref => ref.ref === referenciaActual).qr;
+
+            document.getElementById("paso1").style.display = "none";
+            document.getElementById("paso2").style.display = "block";
+
+            iniciarCuentaRegresiva(180);
+        }
+
+        function setPaymentTitle(plataformaSeleccionada, tituloPago) {
+            if (plataformaSeleccionada === "Binance") {
+                tituloPago.textContent = "Pago: 25 USD";
+            } else if (plataformaSeleccionada === "Binance") {
+                tituloPago.textContent = "Pago: 25 USD";
+            }
+        }
+
+        function setRandomReference(plataformaSeleccionada) {
+            const opciones = referenciasQR[plataformaSeleccionada];
+            const aleatoria = opciones[Math.floor(Math.random() * opciones.length)];
+            referenciaActual = aleatoria.ref;
+        }
+
+
+        function mostrarVistaPrevia(input) {
+            const archivo = input.files[0];
+            const preview = document.getElementById("previewFactura");
+
+            preview.innerHTML = "";
+
+            if (archivo && archivo.type.startsWith("image/")) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement("img");
+                    img.src = e.target.result;
+                    img.style.maxWidth = "30%";
+                    img.style.borderRadius = "10px";
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(archivo);
+            } else {
+                preview.textContent = "El archivo no es una imagen válida.";
+            }
+        }
+
+        function confirmarPago() {
+            const refUserValue = document.getElementById("refUser").value.trim();
+
+            if (refUserValue !== referenciaActual) {
+                Swal.fire("❌ Error", "La referencia de pago no coincide con la esperada.", "error");
+                return;
+            }
+
+            clearTimeout(timeoutID);
+            Swal.fire("✅ Éxito", "El pago ha sido confirmado correctamente.", "success").then(() => {
+                document.getElementById("paso2").style.display = "none";
+                enviarDatosAlServidor(); // Enviar directamente los datos al servidor
+
+            });
+        }
+
+        async function UploadFile() {
+            const form = document.getElementById("uploadForm");
+
+            const nombres = document.getElementById("nombres").value.trim();
+            const palabras = nombres.split(" ").filter(p => p !== "");
+            const whatsApp = document.getElementById("whatsApp").value.trim();
+            const pais = document.getElementById("pais").value.trim();
+            const invitar = document.getElementById("invitar").value.trim();
+            const palabrasInvitar = invitar.split(" ").filter(p => p !== "");
+
+            const binance = document.getElementById("binance_de_Pay").value.trim();
+            
+
+            const dineroSeleccionado = document.querySelector('input[name="dinero"]:checked');
+            const pagosSeleccionados = Array.from(document.querySelectorAll('input[name="pago_preferido"]:checked'));
+
+            if (!validateFormFields(palabras, palabrasInvitar, whatsApp, pais, invitar, dineroSeleccionado, pagosSeleccionados,  binance)) {
+                return;
+            }
+
+            const metodoTexto = pagosSeleccionados.map(p => p.value).join(', ');
+            const binanceHtml = binance ? `<p><strong>Binance:</strong> ${binance}</p>` : '';
+            const metodoHtml = `<p><strong>Método(s) de pago:</strong> ${metodoTexto}</p>`;
+
+            const confirmacion = await Swal.fire({
+                icon: 'question',
+                title: '¿Deseas enviar esta información?',
+                html: `
+            <p><strong>Nombre:</strong> ${nombres}</p>
+            <p><strong>WhatsApp:</strong> ${whatsApp}</p>
+            <p><strong>País:</strong> ${pais}</p>
+            <p><strong>Invita a:</strong> ${invitar}</p>
+            ${metodoHtml}
+            ${binanceHtml}
+        `,
+                showCancelButton: true,
+                confirmButtonText: 'Sí, seguramente',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (!confirmacion.isConfirmed) return;
+
+            document.getElementById("paso1").style.display = "block";
+            document.getElementById("paso2").style.display = "none";
+        }
+
+        function validateFormFields(palabras, palabrasInvitar, whatsApp, pais, invitar, dineroSeleccionado, pagosSeleccionados, binance) {
+            if (palabras.length < 3 || palabras.length > 4) {
+                Swal.fire("⚠️ Nombre inválido", "El campo nombres debe tener entre 3 y 4 palabras.", "warning");
+                return false;
+            }
+
+            if (palabrasInvitar.length < 3 || palabrasInvitar.length > 4) {
+                Swal.fire("⚠️ Invitación inválida", "El campo 'invitar' debe tener entre 3 y 4 palabras.", "warning");
+                return false;
+            }
+
+            if (!whatsApp || !pais || !invitar) {
+                Swal.fire("⚠️ Faltan datos", "Completa todos los campos obligatorios.", "warning");
+                return false;
+            }
+
+            if (!dineroSeleccionado || pagosSeleccionados.length === 0) {
+                Swal.fire("⚠️ Selección necesaria", "Marca si tienes dinero y tu método de pago.", "warning");
+                return false;
+            }
+
+            for (let metodo of pagosSeleccionados) {
+                const value = metodo.value;
+                if (value === "Binance" && !binance) {
+                    Swal.fire("⚠️ Requiere Binance", "Debes ingresar tu ID de Binance.", "warning");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        async function enviarDatosAlServidor() {
+            const form = document.getElementById("uploadForm");
+            const formData = new FormData(form);
+
+            const nombres = document.getElementById("nombres").value.trim();
+            const whatsApp = document.getElementById("whatsApp").value.trim();
+            const whatsAppLimpio = whatsApp.replace(/[^+\d]/g, '');
+            const pais = document.getElementById("pais").value.trim();
+            const invitar = document.getElementById("invitar").value.trim();
+            const binance = document.getElementById("binance_de_Pay").value.trim();
+            const dineroSeleccionado = document.querySelector('input[name="dinero"]:checked');
+            const pagosSeleccionados = Array.from(document.querySelectorAll('input[name="pago_preferido"]:checked'));
+
+            Swal.fire({
+                title: 'Enviando...',
+                didOpen: () => Swal.showLoading(),
+                allowOutsideClick: false
+            });
+
+            try {
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (response.ok) {
+                    showSuccessMessage(nombres, whatsAppLimpio, pais, invitar, binance, pagosSeleccionados, dineroSeleccionado);
+                    resetForm(form);
+                } else {
+                    throw new Error("Error en el servidor");
+                }
+            } catch (error) {
+                Swal.fire("❌ Error", "No se pudo enviar el formulario.", "error");
+                console.error(error);
+            }
+        }
+
+        function showSuccessMessage(nombres, whatsAppLimpio, pais, invitar, binance,  pagosSeleccionados, dineroSeleccionado) {
+            Swal.fire({
+                title: "✅ Datos enviados correctamente",
+                html: `
+            <p><strong>Nombre:</strong> ${nombres}</p>
+            <p><strong>WhatsApp:</strong> ${whatsAppLimpio}</p>
+            <p><strong>País:</strong> ${pais}</p>
+            <p><strong>Invita a:</strong> ${invitar}</p>
+            <p><strong>Binance de Pay:</strong> ${binance}</p>
+            <p><strong>Método(s) de pago seleccionado(s):</strong> ${pagosSeleccionados.map(p => p.value).join(', ')}</p>
+            <p><strong>Dinero:</strong> ${dineroSeleccionado?.value || 'N/A'}</p>
+            <br>
+            <button onclick="window.open('https://chat.whatsapp.com/Eoa2r5mIQER9ITs0touhfN?mode=ac_t', '_blank'); Swal.close();"
+                style="background-color: #25D366; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 16px; cursor: pointer;">
+                👉 Únete al Grupo WhatsApp 👈
+            </button>
+        `,
+                icon: "success",
+                showConfirmButton: false,
+                timer: 15000,
+
+                // 🖼️ Fondo personalizado solo para el modal
+                background: 'url("img/Ciclovida.png") center center / cover no-repeat',
+                backdrop: 'rgba(0, 0, 0, 0.4)', // fondo detrás del modal
+                color: '#000' // color de texto dentro del modal
+            });
+
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 15000);
+        }
+
+        function resetForm(form) {
+            form.reset();
+            document.getElementById("submitButton").disabled = true;
+            document.querySelectorAll(".option.selected").forEach(el => el.classList.remove("selected"));
+            document.getElementById("binance_de_Pay").parentElement.style.display = "none";
+        }
+    </script>
+
+    <script src="Js/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- divinectorwen.com -->
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CicloVida</title>
+    <!-- Imagen que se mostrará como miniatura del link -->
+    <meta property="og:image" content="https://softwerb.github.io/Ciclovida/img/Ciclonormal.png" />
+    <meta property="og:title" content="CicloVida" />
+    <meta property="og:description" content="Proyecto sobre Ciclovida saludable y movilidad" />
+    <meta property="og:url" content="https://softwerb.github.io/Ciclovida/" />
+    <meta property="og:type" content="website" />
+
+    <link rel="icon" type="image/jpg" href="img/Ciclonormal.png">
+    <link rel="shortcut icon" href="img/Ciclovida.png" type="image/svg+xml">
+    <link rel="stylesheet" href="css/Mantiemirtro.css">
+</head>
+<body>
+    <div class="container">        
+        <img src="img/ilustracion-reparacion-computadoras_1284-64457-Photoroom.png" alt="">
+        <h1>Mantenimiento</h1>
+        <p>Oops! Página no encontrada</p>
+        <a href="#">Ir al inicio</a>
+      </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.querySelector("a").addEventListener("click", function(e) {
+    e.preventDefault(); // Evita que se redirija de inmediato
+    Swal.fire({
+      title: 'Solución de software 💻',
+      text: '🔧 Página en mantenimiento... volvemos con mejoras.',
+      icon: 'info',
+      confirmButtonText: 'Entendido',
+      confirmButtonColor: '#4293ef',
+      backdrop: true
+    }).then(() => {
+      // Después de cerrar el mensaje, redirige (si deseas)
+      window.location.href = "index.html"; // Cambia "index.html" por tu página de inicio real
+    });
+  });
+</script>
+
+</html>
